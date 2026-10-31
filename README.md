@@ -3,6 +3,9 @@
 > **PromptWars Virtual by Google — Challenge 5: Celebration & Event Planner**  
 > *A deterministic constraint-satisfaction and GenAI-powered event planning assistant for weddings, birthdays, and community gatherings.*
 
+🌐 **Live Production Deployment**: [https://sutra-event-planner.vercel.app](https://sutra-event-planner.vercel.app)  
+📦 **GitHub Repository**: [https://github.com/airz-raj/SUTRA.git](https://github.com/airz-raj/SUTRA.git)  
+
 ---
 
 ## 1. Executive Summary & Problem Philosophy

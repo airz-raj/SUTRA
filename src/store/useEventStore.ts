@@ -143,7 +143,7 @@ export const useEventStore = create<EventStore>()(
       },
 
       applyNLMutation: (input: string) => {
-        const { plan } = get();
+        const { plan, geminiApiKey } = get();
         if (!plan) return;
 
         const snapshot = takeSnapshot(plan);
@@ -156,10 +156,45 @@ export const useEventStore = create<EventStore>()(
           showDiff: true,
           error: null,
         });
+
+        // If an API key is present, attempt live AI enrichment in background
+        if (geminiApiKey) {
+          fetch("/api/orchestrate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-gemini-key": geminiApiKey,
+            },
+            body: JSON.stringify({
+              action: "mutate",
+              eventPlan: newPlan,
+              mutation,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && data.eventPlan && data.executionTier === "gemini") {
+                const current = get().plan;
+                if (current) {
+                  set({
+                    plan: {
+                      ...current,
+                      personalizedIdeas: data.eventPlan.personalizedIdeas ?? current.personalizedIdeas,
+                      vibeDescription: data.eventPlan.vibeDescription ?? current.vibeDescription,
+                      executionTier: "gemini",
+                    },
+                  });
+                }
+              }
+            })
+            .catch(() => {
+              // Silently remain on deterministic engine
+            });
+        }
       },
 
       applyStructuredMutation: (mutation: DeltaMutation) => {
-        const { plan } = get();
+        const { plan, geminiApiKey } = get();
         if (!plan) return;
 
         const snapshot = takeSnapshot(plan);
@@ -171,6 +206,41 @@ export const useEventStore = create<EventStore>()(
           showDiff: true,
           error: null,
         });
+
+        // If an API key is present, attempt live AI enrichment in background
+        if (geminiApiKey) {
+          fetch("/api/orchestrate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-gemini-key": geminiApiKey,
+            },
+            body: JSON.stringify({
+              action: "mutate",
+              eventPlan: newPlan,
+              mutation,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && data.eventPlan && data.executionTier === "gemini") {
+                const current = get().plan;
+                if (current) {
+                  set({
+                    plan: {
+                      ...current,
+                      personalizedIdeas: data.eventPlan.personalizedIdeas ?? current.personalizedIdeas,
+                      vibeDescription: data.eventPlan.vibeDescription ?? current.vibeDescription,
+                      executionTier: "gemini",
+                    },
+                  });
+                }
+              }
+            })
+            .catch(() => {
+              // Silently remain on deterministic engine
+            });
+        }
       },
 
       applyStressTest: (index: number) => {

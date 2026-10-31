@@ -97,8 +97,8 @@ export default function DiscoveryIntakeModal() {
     dietaryRestrictions: [],
   });
 
-  // Show modal if no plan exists and modal isn't dismissed, OR if explicitly opened
-  const isVisible = showIntakeModal || !plan;
+  // Show modal only when explicitly opened
+  const isVisible = showIntakeModal;
 
   if (!isVisible) return null;
 

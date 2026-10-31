@@ -171,17 +171,45 @@ export async function orchestrate(
     const ai = new GoogleGenAI({ apiKey: key! });
 
     const prompt = buildPrompt(params, action, mutation);
+    const candidateModels = [
+      "gemini-2.5-flash",
+      "gemini-3.8-flash",
+      "gemini-3.5-flash",
+      "gemini-flash-latest",
+    ];
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        temperature: 0.3,
-      },
-    });
+    let text = "";
+    let lastError = "";
 
-    const text = response.text ?? "";
+    for (const model of candidateModels) {
+      try {
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Model ${model} timed out after 6s`)), 6000)
+        );
+
+        const callPromise = ai.models.generateContent({
+          model,
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+            temperature: 0.3,
+          },
+        });
+
+        const response = await Promise.race([callPromise, timeoutPromise]);
+        text = response.text ?? "";
+        if (text.trim().length > 0) {
+          break; // Successfully got response
+        }
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : String(err);
+        // Continue to next candidate model
+      }
+    }
+
+    if (!text.trim()) {
+      throw new Error(`Google Studio API error or high-demand quota spike: ${lastError.slice(0, 100)}`);
+    }
 
     // Try to parse the JSON response
     let parsed: Record<string, unknown>;

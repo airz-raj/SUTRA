@@ -154,7 +154,7 @@ export default function ByokModal() {
 
         {/* Input */}
         <div className="space-y-2">
-          <label htmlFor="apiKeyInput" className="text-xs font-medium text-zinc-300 flex items-center justify-between">
+          <div className="flex items-center justify-between text-xs font-medium text-zinc-300">
             <span>Google Studio Gemini API Key</span>
             <a
               href="https://aistudio.google.com/app/apikey"
@@ -164,7 +164,7 @@ export default function ByokModal() {
             >
               Get a key <ExternalLink className="h-3 w-3" />
             </a>
-          </label>
+          </div>
           <input
             id="apiKeyInput"
             type="password"
@@ -174,11 +174,11 @@ export default function ByokModal() {
               setTestStatus("idle");
               setErrorMessage(null);
             }}
-            placeholder="AIzaSy... or standard Google AI Studio key"
+            placeholder="Paste your Google AI Studio API key here"
             className="w-full rounded-lg border border-zinc-800 bg-zinc-900/90 px-3.5 py-2.5 text-sm font-mono text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
           />
           <p className="text-[11px] text-zinc-500">
-            Stored in browser session memory only. Never saved to local storage or external databases.
+            Supports both classic and new Studio formats. Stored in session memory only (never written to disk).
           </p>
         </div>
 

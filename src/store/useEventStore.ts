@@ -118,15 +118,53 @@ export const useEventStore = create<EventStore>()(
           ...preset,
           lastUpdated: new Date().toISOString(),
         });
+        const { geminiApiKey } = get();
         set({
           plan,
           activePreset: key,
-          executionTier: "deterministic",
+          executionTier: geminiApiKey ? "gemini" : "deterministic",
           error: null,
           previousSnapshot: null,
           showDiff: false,
           showIntakeModal: false,
         });
+
+        // If API key is present, enrich in background with live Gemini ideas
+        if (geminiApiKey) {
+          fetch("/api/orchestrate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-gemini-key": geminiApiKey,
+            },
+            body: JSON.stringify({
+              action: "plan",
+              eventPlan: plan,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && data.eventPlan) {
+                const current = get().plan;
+                if (current && get().activePreset === key) {
+                  set({
+                    plan: {
+                      ...current,
+                      personalizedIdeas: data.eventPlan.personalizedIdeas?.length
+                        ? data.eventPlan.personalizedIdeas
+                        : current.personalizedIdeas,
+                      vibeDescription: data.eventPlan.vibeDescription ?? current.vibeDescription,
+                      executionTier: "gemini",
+                    },
+                    executionTier: "gemini",
+                  });
+                }
+              }
+            })
+            .catch(() => {
+              // Silently stay on deterministic engine
+            });
+        }
       },
 
       initCustomPlan: (params: Partial<EventPlan>) => {
@@ -327,6 +365,43 @@ export const useEventStore = create<EventStore>()(
 
       setApiKey: (key: string | null) => {
         set({ geminiApiKey: key });
+        const { plan } = get();
+        if (key && plan) {
+          // Re-enrich with live Gemini ideas
+          fetch("/api/orchestrate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-gemini-key": key,
+            },
+            body: JSON.stringify({
+              action: "plan",
+              eventPlan: plan,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && data.eventPlan) {
+                const current = get().plan;
+                if (current) {
+                  set({
+                    plan: {
+                      ...current,
+                      personalizedIdeas: data.eventPlan.personalizedIdeas?.length
+                        ? data.eventPlan.personalizedIdeas
+                        : current.personalizedIdeas,
+                      vibeDescription: data.eventPlan.vibeDescription ?? current.vibeDescription,
+                      executionTier: "gemini",
+                    },
+                    executionTier: "gemini",
+                  });
+                }
+              }
+            })
+            .catch(() => {});
+        } else if (!key && plan) {
+          set({ executionTier: "deterministic" });
+        }
       },
 
       setActiveTab: (tab) => set({ activeTab: tab }),

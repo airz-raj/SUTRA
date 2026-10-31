@@ -193,7 +193,7 @@ export default function ByokModal() {
         {testStatus === "valid" && (
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-center gap-2 text-xs text-emerald-300">
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            <span>Successfully connected to Gemini 2.5 Flash! Tier 1 live AI is now active.</span>
+            <span>Successfully connected to Google Gemini AI! Tier 1 live AI inference is now active.</span>
           </div>
         )}
 

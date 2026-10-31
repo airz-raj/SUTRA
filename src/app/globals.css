@@ -5,20 +5,22 @@
  * Canvas: #09090B | Surface: #121215 | Accent: #F59E0B (Amber)
  * ──────────────────────────────────────────────────────────── */
 
-:root {
-  --color-obsidian: #09090B;
+@theme {
+  --color-obsidian: #09090b;
   --color-surface: #121215;
   --color-surface-hover: #1a1a1f;
   --color-border: #27272a80;
   --color-border-bright: #3f3f46;
-  --color-brass: #F59E0B;
-  --color-brass-dim: #D97706;
-  --color-rose-alert: #E11D48;
-  --color-emerald: #10B981;
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #A1A1AA;
-  --color-text-muted: #71717A;
+  --color-brass: #f59e0b;
+  --color-brass-dim: #d97706;
+  --color-rose-alert: #e11d48;
+  --color-emerald: #10b981;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+}
 
+:root {
   --font-sans: 'Inter', 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
 }

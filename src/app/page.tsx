@@ -15,6 +15,7 @@
  * - Global Modals: Custom Intake Wizard, BYOK Modal, Visual Diff Drawer
  */
 
+import { useEffect } from "react";
 import { useEventStore } from "@/store/useEventStore";
 import HeaderHUD from "@/components/HeaderHUD";
 import LiveMutationBar from "@/components/LiveMutationBar";
@@ -46,6 +47,24 @@ export default function Home() {
   const activeTab = useEventStore((s) => s.activeTab);
   const loadPreset = useEventStore((s) => s.loadPreset);
   const setShowIntakeModal = useEventStore((s) => s.setShowIntakeModal);
+
+  // Auto-load preset from URL query parameter (e.g. ?preset=wedding or ?key=...)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const presetParam = params.get("preset");
+      if (
+        presetParam &&
+        (presetParam === "wedding" || presetParam === "birthday" || presetParam === "community")
+      ) {
+        loadPreset(presetParam);
+      }
+      const keyParam = params.get("key");
+      if (keyParam) {
+        useEventStore.getState().setApiKey(keyParam);
+      }
+    }
+  }, [loadPreset]);
 
   return (
     <div className="min-h-screen bg-[#09090B] text-zinc-100 selection:bg-amber-500/20 selection:text-amber-300 font-sans antialiased">

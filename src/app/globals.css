@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/* ────────────────────────────────────────────────────────────
+ * SUTRA — Dark Obsidian Design System
+ * Canvas: #09090B | Surface: #121215 | Accent: #F59E0B (Amber)
+ * ──────────────────────────────────────────────────────────── */
+
+:root {
+  --color-obsidian: #09090B;
+  --color-surface: #121215;
+  --color-surface-hover: #1a1a1f;
+  --color-border: #27272a80;
+  --color-border-bright: #3f3f46;
+  --color-brass: #F59E0B;
+  --color-brass-dim: #D97706;
+  --color-rose-alert: #E11D48;
+  --color-emerald: #10B981;
+  --color-text-primary: #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+
+  --font-sans: 'Inter', 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+}
+
+/* ── Base resets ── */
+body {
+  background-color: var(--color-obsidian);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-obsidian);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-bright);
+}
+
+/* ── Focus ring ── */
+*:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: #F59E0B33;
+  color: var(--color-text-primary);
+}
+
+/* ── Utility animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-brass {
+  0%, 100% { box-shadow: 0 0 0 0 #F59E0B40; }
+  50% { box-shadow: 0 0 0 8px #F59E0B00; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.25s ease-out;
+}
+
+.animate-pulse-brass {
+  animation: pulse-brass 2s infinite;
+}
+
+/* ── Badge styles ── */
+.badge-ai {
+  background-color: #F59E0B20;
+  color: #F59E0B;
+  border: 1px solid #F59E0B40;
+}
+
+.badge-confirmed {
+  background-color: #10B98120;
+  color: #10B981;
+  border: 1px solid #10B98140;
+}
+
+.badge-critical {
+  background-color: #E11D4820;
+  color: #E11D48;
+  border: 1px solid #E11D4840;
+}
+

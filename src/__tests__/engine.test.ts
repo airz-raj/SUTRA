@@ -314,5 +314,94 @@ describe("SUTRA Engine Test Suite", () => {
       expect(validateApiKeyFormat("invalid space key 1234567890")).toBe(false);
     });
   });
+
+  // ────────────────────────────────────────────────────────────
+  // Test 6: Advanced Resilience & Edge-Case Guardrails
+  // ────────────────────────────────────────────────────────────
+  describe("Module F: Advanced Resilience & Architectural Integrity", () => {
+    it("safely handles extreme minimum budget allocation without NaN or infinity", () => {
+      const minBudget = 1000;
+      const guests = 10;
+      const priorities = { food: 5, venue: 5, decor: 5, photography: 5, logistics: 5 };
+
+      const allocations = allocateBudget(minBudget, guests, priorities, "INR");
+      expect(allocations).toHaveLength(5);
+
+      for (const alloc of allocations) {
+        expect(Number.isFinite(alloc.allocated)).toBe(true);
+        expect(alloc.allocated).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it("correctly identifies non-overrun scenario when projected cost is below budget", () => {
+      const budget = 500000;
+      const projected = 450000;
+      const check = checkOverrun(budget, projected, 0.2);
+
+      expect(check.isOverrun).toBe(false);
+      expect(check.overrunAmount).toBe(-50000);
+      expect(check.overrunPercent).toBeLessThan(0);
+    });
+
+    it("solves multi-branch diamond DAG dependency graphs with multiple parallel paths", () => {
+      const diamondTasks: DagTask[] = [
+        { id: "A", title: "Task A (Start)", category: "venue", durationDays: 5, dependsOn: [], status: "pending" },
+        { id: "B", title: "Task B (Branch 1)", category: "catering", durationDays: 10, dependsOn: ["A"], status: "pending" },
+        { id: "C", title: "Task C (Branch 2 - Long)", category: "decor", durationDays: 15, dependsOn: ["A"], status: "pending" },
+        { id: "D", title: "Task D (Merge)", category: "logistics", durationDays: 5, dependsOn: ["B", "C"], status: "pending" },
+      ];
+
+      const cpm = computeCriticalPath(diamondTasks);
+      expect(cpm.totalDuration).toBe(5 + 15 + 5); // 25 days via longer branch C
+      expect(cpm.criticalPath).toContain("A");
+      expect(cpm.criticalPath).toContain("C");
+      expect(cpm.criticalPath).toContain("D");
+      // Branch B has slack: 15 - 10 = 5 days slack, so it is not on the critical path
+      const taskB = cpm.tasks.find((t) => t.id === "B")!;
+      expect(taskB.slack).toBe(5);
+      expect(taskB.isCriticalPath).toBe(false);
+    });
+
+    it("detects unfeasible timelines when CPM duration exceeds target deadline", () => {
+      const longTasks: DagTask[] = [
+        { id: "T1", title: "Task 1", category: "venue", durationDays: 40, dependsOn: [], status: "pending" },
+        { id: "T2", title: "Task 2", category: "catering", durationDays: 30, dependsOn: ["T1"], status: "pending" },
+      ];
+
+      const feasibility = isTimelineFeasible(longTasks, 50);
+      expect(feasibility.feasible).toBe(false);
+      expect(feasibility.totalDuration).toBe(70);
+      expect(feasibility.deficit).toBe(20); // 70 - 50 = 20 days deficit
+    });
+
+    it("parses compound natural language delta with mixed casing and currency symbols", () => {
+      const input = "Add 100 pax, increase budget by ₹2,00,000, and advance date by 10 days";
+      const mutation = parseMutation(input);
+
+      expect(mutation.guestCountDelta).toBe(100);
+      expect(mutation.budgetDelta).toBe(200000);
+      expect(mutation.daysUntilEventDelta).toBe(-10); // advancing date moves it earlier (-10d)
+    });
+
+    it("extracts all standard hidden clauses from complex vendor contract text", () => {
+      const complexQuote = `
+        Vendor: Royal Palace Banquets
+        Base pricing: ₹4,00,000
+        Per guest fee: ₹1,200
+        Conditions:
+        - 18% GST applicable over and above quoted rates
+        - Surcharge of 10% on weekends
+        - Corkage fee of ₹500 per bottle
+        - Cleaning charge of ₹15,000 post-event
+        - Setup fee charged separately
+      `;
+
+      const quote = parseVendorQuote(complexQuote, "Royal Palace Banquets", "venue", 150);
+      expect(quote.hiddenClauses.length).toBeGreaterThanOrEqual(4);
+      expect(quote.hiddenClauses.some((c) => /gst|tax/i.test(c))).toBe(true);
+      expect(quote.hiddenClauses.some((c) => /corkage/i.test(c))).toBe(true);
+      expect(quote.hiddenClauses.some((c) => /clean/i.test(c))).toBe(true);
+    });
+  });
 });
 

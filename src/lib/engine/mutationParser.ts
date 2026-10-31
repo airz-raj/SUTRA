@@ -26,8 +26,8 @@ const PATTERNS = {
   reduceBudgetAlt: /(?:budget)\s*(?:reduce|cut|decrease|minus|-)\s*(?:by\s*)?(?:₹|\$|INR|USD)?\s*([\d,]+(?:\.\d+)?)/i,
 
   // Timeline changes
-  moveEarlier: /(?:move|shift|bring)\s*(?:event|date|deadline)?\s*(\d+)\s*(?:days?|weeks?|months?)\s*(?:earlier|sooner|forward|up)/i,
-  moveLater: /(?:move|shift|push|delay|postpone)\s*(?:event|date|deadline)?\s*(\d+)\s*(?:days?|weeks?|months?)\s*(?:later|back|out)?/i,
+  moveEarlier: /(?:move|shift|bring|advance)\s*(?:the\s*)?(?:event|date|deadline)?\s*(?:by\s*)?(\d+)\s*(?:days?|weeks?|months?)(?:\s*(?:earlier|sooner|forward|up))?/i,
+  moveLater: /(?:move|shift|push|delay|postpone)\s*(?:the\s*)?(?:event|date|deadline)?\s*(?:by\s*)?(\d+)\s*(?:days?|weeks?|months?)(?:\s*(?:later|back|out))?/i,
   moveEarlierAlt: /(\d+)\s*(?:days?|weeks?|months?)\s*(?:earlier|sooner)/i,
   moveLaterAlt: /(\d+)\s*(?:days?|weeks?|months?)\s*(?:later|delayed?)/i,
 

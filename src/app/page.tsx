@@ -27,6 +27,7 @@ import DiscoveryIntakeModal from "@/components/DiscoveryIntakeModal";
 import ByokModal from "@/components/ByokModal";
 import ValidationTelemetryModal from "@/components/ValidationTelemetryModal";
 import DiffDrawer from "@/components/DiffDrawer";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import {
   Sparkles,
   Heart,
@@ -119,24 +120,26 @@ export default function Home() {
 
             {/* Active Workspace View */}
             <div className="animate-fade-in" key={activeTab}>
-              {activeTab === "budget" && <BudgetCommandCenter />}
-              {activeTab === "timeline" && <DagTimelineBoard />}
-              {activeTab === "vendor" && <VendorQuoteArena />}
-              {activeTab === "ideas" && <PersonalizedIdeasDeck />}
-              {activeTab === "validation" && (
-                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                    <h3 className="text-base font-bold text-zinc-100">
-                      Judge Validation & Tool Usage Telemetry
-                    </h3>
+              <ErrorBoundary fallbackTitle={`${activeTab.toUpperCase()} Workspace Error`}>
+                {activeTab === "budget" && <BudgetCommandCenter />}
+                {activeTab === "timeline" && <DagTimelineBoard />}
+                {activeTab === "vendor" && <VendorQuoteArena />}
+                {activeTab === "ideas" && <PersonalizedIdeasDeck />}
+                {activeTab === "validation" && (
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                      <h3 className="text-base font-bold text-zinc-100">
+                        Judge Validation & Tool Usage Telemetry
+                      </h3>
+                    </div>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      Review tool usage enforcement, prompt evolution across 3 iterations, and the dual-tier deterministic fallback architecture.
+                    </p>
+                    <ValidationTelemetryModal />
                   </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    Review tool usage enforcement, prompt evolution across 3 iterations, and the dual-tier deterministic fallback architecture.
-                  </p>
-                  <ValidationTelemetryModal />
-                </div>
-              )}
+                )}
+              </ErrorBoundary>
             </div>
           </div>
         ) : (
